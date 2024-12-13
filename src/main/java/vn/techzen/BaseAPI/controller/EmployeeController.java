@@ -3,7 +3,11 @@ package vn.techzen.BaseAPI.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.techzen.BaseAPI.dto.ApiResponse;
 import vn.techzen.BaseAPI.dto.Gender;
+import vn.techzen.BaseAPI.dto.JsonResponse;
+import vn.techzen.BaseAPI.dto.exception.AppException;
+import vn.techzen.BaseAPI.dto.exception.ErrorCode;
 import vn.techzen.BaseAPI.models.Employee;
 
 import java.time.LocalDate;
@@ -28,21 +32,18 @@ public class EmployeeController {
 
     // Get all employees
     @GetMapping
-    public ResponseEntity<List<Employee>> getEmployees() {
-        return ResponseEntity.ok(employees);
+    public ResponseEntity<?> getEmployees() {
+        return JsonResponse.ok(employees);
     }
 
     // Get a specific employee by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployee(@PathVariable UUID id) {
-        for (Employee employee : employees) {
-            if (employee.getId().equals(id)) {
-                // Return 200 OK with the employee
-                return ResponseEntity.ok(employee);
-            }
-        }
-        // Return 404 Not Found if no match is found
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getEmployeeByID(@PathVariable("id") UUID id) {
+        return employees.stream()
+                .filter(e -> e.getId().equals(id))
+                .findFirst()
+                .map(JsonResponse::ok)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_EXIST));
     }
 
 
@@ -51,38 +52,38 @@ public class EmployeeController {
     public ResponseEntity<?> addEmployee(@RequestBody Employee employee) {
         employee.setId(UUID.randomUUID());  // Generate a new ID
         employees.add(employee);
-        return ResponseEntity.ok(employee);
+        return JsonResponse.created(employee);
     }
 
     // Update an existing employee by ID
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable UUID id, @RequestBody Employee updatedEmployee) {
-        Optional<Employee> existingEmployeeOpt = employees.stream().filter(e -> e.getId().equals(id)).findFirst();
+    public ResponseEntity<?> updateEmployee(@PathVariable("id") UUID id, @RequestBody Employee employee) {
+        return employees.stream()
+                .filter(e -> e.getId().equals(id))
+                .findFirst()
+                .map(e -> {
+                    e.setName(employee.getName());
+                    e.setDob(employee.getDob());
+                    e.setGender(employee.getGender());
+                    e.setSalary(employee.getSalary());
+                    e.setPhone(employee.getPhone());
 
-        if (existingEmployeeOpt.isPresent()) {
-            Employee existingEmployee = existingEmployeeOpt.get();
-            // Update fields (you can add more fields to be updated as needed)
-            existingEmployee.setName(updatedEmployee.getName());
-            existingEmployee.setDob(updatedEmployee.getDob());
-            existingEmployee.setGender(updatedEmployee.getGender());
-            existingEmployee.setSalary(updatedEmployee.getSalary());
-            existingEmployee.setPhone(updatedEmployee.getPhone());
-            return ResponseEntity.ok(existingEmployee);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+                    return JsonResponse.ok(e);
+                })
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_EXIST));
     }
 
     // Delete an employee by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEmployee(@PathVariable UUID id) {
-        for (Employee employee : employees) {
-            if (employee.getId().equals(id)) {
-                employees.remove(employee);
-                return ResponseEntity.ok("Employee with ID " + id + " has been successfully deleted.");
-            }
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<?> deleteEmployee(@PathVariable("id") UUID id) {
+        return employees.stream()
+                .filter(e -> e.getId().equals(id))
+                .findFirst()
+                .map(e -> {
+                    employees.remove(e);
+                    return JsonResponse.noContent();
+                })
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_EXIST));
     }
 
 }
