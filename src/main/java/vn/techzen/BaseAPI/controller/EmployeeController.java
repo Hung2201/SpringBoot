@@ -35,7 +35,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEmployee(@PathVariable String id) {
+    public ResponseEntity<?> getEmployee(@PathVariable UUID id) {
         Employee empl = employeeService.getEmployee(id);
         if (empl == null) {
             throw new AppException(ErrorCode.EMPLOYEE_NOT_EXIST);
@@ -49,7 +49,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Employee>> updateEmployee(@PathVariable String id, @RequestBody Employee updatedData) {
+    public ResponseEntity<ApiResponse<Employee>> updateEmployee(@PathVariable UUID id, @RequestBody Employee updatedData) {
         Employee updatedEmployee = employeeService.updateEmployee(id, updatedData);
 
         if (updatedEmployee == null) {
@@ -60,7 +60,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable String id) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable UUID id) {
         employeeService.deleteEmployee(id);
         return JsonResponse.noContent();
     }

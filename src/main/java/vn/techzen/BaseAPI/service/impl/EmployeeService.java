@@ -13,10 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeService implements IEmployeeService {
+
     @Autowired
     IEmployeeRepository employeeRepository;
 
@@ -24,11 +27,11 @@ public class EmployeeService implements IEmployeeService {
         return employeeRepository.findByAttributes(name, dobFrom, dobTo, gender, salaryRange, phone, departmentId);
     }
 
-    public Void deleteEmployee(String id) {
+    public Void deleteEmployee(UUID id) {
         return employeeRepository.deleteEmployee(id);
     }
 
-    public Employee updateEmployee(String id, Employee updatedData){
+    public Employee updateEmployee(UUID id, Employee updatedData){
         return employeeRepository.updateEmployee(id, updatedData);
     }
 
@@ -36,7 +39,7 @@ public class EmployeeService implements IEmployeeService {
         return employeeRepository.getAllEmployees();
     }
 
-    public Employee getEmployee(String id) {
+    public Employee getEmployee(UUID id) {
         return employeeRepository.getEmployee(id);
     }
 

@@ -40,9 +40,9 @@ public class EmployeeRepository implements IEmployeeRepository {
 
         List<Employee> filteredEmployees = employee.stream()
                 .filter(emp -> name == null || emp.getName().toLowerCase().contains(name.toLowerCase()))
-                .filter(emp -> parsedDobFrom == null || !emp.getBirthday().isBefore(parsedDobFrom))
-                .filter(emp -> parsedDobTo == null || !emp.getBirthday().isAfter(parsedDobTo))
-                .filter(emp -> gender == null || emp.getGender().equalsIgnoreCase(gender))
+                .filter(emp -> parsedDobFrom == null || !emp.getDob().isBefore(parsedDobFrom))
+                .filter(emp -> parsedDobTo == null || !emp.getDob().isAfter(parsedDobTo))
+                .filter(emp -> gender == null || !emp.getGender().equals(gender))
                 .filter(emp -> salaryFrom == null || emp.getSalary() >= salaryFrom)
                 .filter(emp -> salaryTo == null || emp.getSalary() <= salaryTo)
                 .filter(emp -> phone == null || emp.getPhone().contains(phone))
@@ -59,7 +59,7 @@ public class EmployeeRepository implements IEmployeeRepository {
     public Employee getEmployee(UUID id) {
         Employee empl = null;
         for (Employee emp : employee) {
-            if (emp.getId() == Integer.parseInt(id)) {
+            if (emp.getId().equals(id)) {
                 empl = emp;
             }
         }
@@ -67,19 +67,19 @@ public class EmployeeRepository implements IEmployeeRepository {
     }
 
     public List<Employee> addEmployee(Employee emp) {
-        emp.setId((int) (Math.random() * 100000));
+        emp.setId((UUID.randomUUID()));
         employee.add(emp);
         return employee;
     }
 
     public Employee updateEmployee(UUID id, Employee updatedData)  {
         Employee existingEmployee = employee.stream()
-                .filter(emp -> emp.getId().equal(id))
+                .filter(emp -> emp.getId().equals(id))
                 .findFirst()
                 .orElse(null);
 
         existingEmployee.setName(updatedData.getName());
-        existingEmployee.setBirthday(updatedData.getBirthday());
+        existingEmployee.setDob(updatedData.getDob());
         existingEmployee.setGender(updatedData.getGender());
         existingEmployee.setPhone(updatedData.getPhone());
         existingEmployee.setSalary(updatedData.getSalary());
@@ -90,7 +90,7 @@ public class EmployeeRepository implements IEmployeeRepository {
     public Void deleteEmployee(UUID id) {
         for (Iterator<Employee> iterator = employee.iterator(); iterator.hasNext();) {
             Employee emp = iterator.next();
-            if (emp.getId().equal(id)) {
+            if (emp.getId().equals(id)) {
                 iterator.remove();
             }
         }
