@@ -5,10 +5,12 @@ import vn.techzen.BaseAPI.models.Department;
 import java.util.List;
 
 public interface IDepartmentRepository {
-    List<Department> getDepartments();
+    List<Department> getAllDepartments();
 
-    Department findById(int id);
+    Department getDepartment(String id);
 
-    Department save(Department department);
-    void delete(int id);
+    Department addDepartment(Department dp);
+
+    Department updateDepartment(String id, Department updatedData);
+    Void deleteDepartment(String id);
 }
