@@ -23,17 +23,40 @@ import java.util.UUID;
 public class EmployeeController {
 
     private List<Employee> employees = new ArrayList<>(Arrays.asList(
-            new Employee(UUID.randomUUID(), "Trần Đức Hùng", LocalDate.of(2003, 10, 11), Gender.MALE, 55000.0, "123-456-7890"),
-            new Employee(UUID.randomUUID(), "Y Âm", LocalDate.of(2004, 3, 5), Gender.FEMALE, 60000.0, "234-567-8901"),
-            new Employee(UUID.randomUUID(), "Hoàng Hữu Hùng", LocalDate.of(2003, 5, 28), Gender.MALE, 65000.0, "345-678-9012"),
-            new Employee(UUID.randomUUID(), "A Tân", LocalDate.of(2001, 3, 11), Gender.MALE, 50000.0, "456-789-0123"),
-            new Employee(UUID.randomUUID(), "Charlie White", LocalDate.of(1988, 7, 19), Gender.MALE, 70000.0, "567-890-1234")
+            new Employee(UUID.randomUUID(), "Trần Đức Hùng", LocalDate.of(2003, 10, 11), Gender.MALE, 20000.0, "123-456-7890", 1),
+            new Employee(UUID.randomUUID(), "Y Âm", LocalDate.of(2004, 3, 5), Gender.FEMALE, 10000.0, "234-567-8901", 2),
+            new Employee(UUID.randomUUID(), "Hoàng Hữu Hùng", LocalDate.of(2003, 5, 28), Gender.MALE, 15000.0, "345-678-9012", 2),
+            new Employee(UUID.randomUUID(), "A Tân", LocalDate.of(2001, 3, 11), Gender.MALE, 4000.0, "456-789-0123", 3),
+            new Employee(UUID.randomUUID(), "Charlie White", LocalDate.of(1988, 7, 19), Gender.MALE, 30000.0, "567-890-1234", 4)
     ));
 
     // Get all employees
     @GetMapping
     public ResponseEntity<?> getEmployees() {
         return JsonResponse.ok(employees);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchEmployees(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "dobFrom", required = false) LocalDate dobFrom,
+            @RequestParam(value = "dobTo", required = false) LocalDate dobTo,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "gender", required = false) Gender gender,
+            @RequestParam(value = "salary", required = false) Double salary,
+            @RequestParam(value = "department", required = false) Integer departmentId) {
+
+        List<Employee> filteredEmployees = employees.stream()
+                .filter(e -> (name == null || e.getName().toLowerCase().contains(name.toLowerCase())))
+                .filter(e -> (dobFrom == null || !e.getDob().isBefore(dobFrom)))
+                .filter(e -> (dobTo == null || !e.getDob().isAfter(dobTo)))
+                .filter(e -> (phone == null || e.getPhone().equals(phone)))
+                .filter(e -> (gender == null || e.getGender() == gender))
+                .filter(e -> (salary == null || e.getSalary().equals(salary)))
+                .filter(e -> (departmentId == null || e.getDepartmentId().equals(departmentId)))
+                .toList();
+
+        return JsonResponse.ok(filteredEmployees);
     }
 
     // Get a specific employee by ID
@@ -67,6 +90,7 @@ public class EmployeeController {
                     e.setGender(employee.getGender());
                     e.setSalary(employee.getSalary());
                     e.setPhone(employee.getPhone());
+                    e.setDepartmentId(employee.getDepartmentId());
 
                     return JsonResponse.ok(e);
                 })

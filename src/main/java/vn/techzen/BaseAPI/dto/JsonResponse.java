@@ -16,3 +16,4 @@ public class JsonResponse {
         return ResponseEntity.notFound().build();
     }
 }
+
