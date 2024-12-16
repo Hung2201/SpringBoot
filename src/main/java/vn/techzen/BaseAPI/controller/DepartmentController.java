@@ -1,11 +1,10 @@
 package vn.techzen.BaseAPI.controller;
 
 import vn.techzen.BaseAPI.dto.ApiResponse;
-import vn.techzen.BaseAPI.dto.Gender;
 import vn.techzen.BaseAPI.dto.JsonResponse;
 import vn.techzen.BaseAPI.dto.exception.AppException;
 import vn.techzen.BaseAPI.dto.exception.ErrorCode;
-import vn.techzen.BaseAPI.models.Department;
+import vn.techzen.BaseAPI.entity.Department;
 import vn.techzen.BaseAPI.service.IDepartmentService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,8 +12,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -30,8 +28,8 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDepartment(@PathVariable String id) {
-        Department department = departmentService.getDepartment(id);
+    public ResponseEntity<?> getDepartment(@PathVariable int id) {
+        Optional<Department> department = departmentService.getDepartment(id);
 
         if (department != null) {
             return JsonResponse.ok(department);
@@ -46,7 +44,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Department>> updateEmployee(@PathVariable String id, @RequestBody Department updatedData) {
+    public ResponseEntity<ApiResponse<Department>> updateEmployee(@PathVariable int id, @RequestBody Department updatedData) {
         Department department = departmentService.updateDepartment(id, updatedData);
 
         if (department != null) {
@@ -58,7 +56,7 @@ public class DepartmentController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDepartment(@PathVariable String id) {
+    public ResponseEntity<Void> deleteDepartment(@PathVariable int id) {
         departmentService.deleteDepartment(id);
         return JsonResponse.noContent();
     }

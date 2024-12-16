@@ -1,11 +1,7 @@
 package vn.techzen.BaseAPI.service.impl;
 
-import vn.techzen.BaseAPI.dto.exception.AppException;
-import vn.techzen.BaseAPI.dto.exception.ErrorCode;
-import vn.techzen.BaseAPI.models.Department;
+import vn.techzen.BaseAPI.entity.Department;
 import vn.techzen.BaseAPI.repository.IDepartmentRepository;
-import vn.techzen.BaseAPI.repository.IEmployeeRepository;
-import vn.techzen.BaseAPI.repository.impl.DepartmentRepository;
 import vn.techzen.BaseAPI.service.IDepartmentService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -26,22 +22,24 @@ public class DepartmentService implements IDepartmentService {
     IDepartmentRepository departmentRepository;
 
     public List<Department> getAllDepartments() {
-        return departmentRepository.getAllDepartments();
+        return departmentRepository.findAll();
     }
 
-    public Department getDepartment(@PathVariable String id) {
-        return departmentRepository.getDepartment(id);
+    public Optional<Department> getDepartment(@PathVariable int id) {
+        return departmentRepository.findById(id);
     }
 
     public Department addDepartment(@RequestBody Department dp) {
-        return departmentRepository.addDepartment(dp);
+        return departmentRepository.save(dp);
     }
 
-    public Department updateDepartment(@PathVariable String id, @RequestBody Department updatedData) {
-        return departmentRepository.updateDepartment(id, updatedData);
+    public Department updateDepartment(@PathVariable int id, @RequestBody Department updatedData) {
+        Department dp = departmentRepository.findById(id).orElse(null);
+        dp.setName(updatedData.getName());
+        return departmentRepository.save(dp);
     }
 
-    public Void deleteDepartment(@PathVariable String id) {
-        return departmentRepository.deleteDepartment(id);
+    public void deleteDepartment(@PathVariable int id) {
+        departmentRepository.deleteById(id);
     }
 }

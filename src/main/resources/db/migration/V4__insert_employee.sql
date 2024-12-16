@@ -1,0 +1,3 @@
+INSERT INTO employee_management.employee (birthday, department_id, salary, gender, name, phone) VALUES ('2003-10-12', 1, 12000000, 'Nam', 'Trần Đức Hùng', '0382870032');
+INSERT INTO employee_management.employee (birthday, department_id, salary, gender, name, phone) VALUES ('2004-03-05', 2, 13000000, 'Nữ', 'Y Âm', '123456789');
+INSERT INTO employee_management.employee (birthday, department_id, salary, gender, name, phone) VALUES ('2006-02-06', 3, 13000000, 'Nữ', 'Huyền Hồ', '123456789');

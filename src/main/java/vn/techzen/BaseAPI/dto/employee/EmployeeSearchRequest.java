@@ -2,8 +2,7 @@ package vn.techzen.BaseAPI.dto.employee;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.format.annotation.DateTimeFormat;
-import vn.techzen.BaseAPI.dto.Gender;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 
@@ -15,12 +14,10 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmployeeSearchRequest {
     String name;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate dobFrom;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate dobTo;
-    Gender gender;
-    Integer salaryRange;
+    String gender;
+    double salaryRange;
     String phone;
-    Integer departmentId;
+    Integer department;
 }
