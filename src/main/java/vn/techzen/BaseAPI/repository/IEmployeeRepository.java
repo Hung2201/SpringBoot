@@ -1,23 +1,43 @@
 package vn.techzen.BaseAPI.repository;
 
-import vn.techzen.BaseAPI.dto.employee.EmployeeSearchRequest;
-import vn.techzen.BaseAPI.entity.Employee;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import vn.techzen.BaseAPI.entity.Employee;
+import vn.techzen.BaseAPI.dto.Gender;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
 import java.util.List;
 
-public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
+public interface IEmployeeRepository  extends JpaRepository<Employee, Integer> , JpaSpecificationExecutor<Employee> {
 
     @Query("""
-        FROM Employee 
-        WHERE (:#{#employeeSearchRequest.name} IS NULL OR name LIKE CONCAT('%', :#{#employeeSearchRequest.name}, '%'))
-        AND (:#{#employeeSearchRequest.dobFrom} IS NULL OR birthday >= :#{#employeeSearchRequest.dobFrom})
-        AND (:#{#employeeSearchRequest.dobTo} IS NULL OR birthday <= :#{#employeeSearchRequest.dobTo})
-        AND (:#{#employeeSearchRequest.gender} IS NULL OR gender = :#{#employeeSearchRequest.gender})
-        AND (:#{#employeeSearchRequest.salaryRange} = 0 OR salary >= :#{#employeeSearchRequest.salaryRange})
-        AND (:#{#employeeSearchRequest.phone} IS NULL OR phone LIKE CONCAT('%', :#{#employeeSearchRequest.phone}, '%'))
-        AND (:#{#employeeSearchRequest.department} IS NULL OR department.id = :#{#employeeSearchRequest.department})
-    """)
-    List<Employee> findByAttributes(EmployeeSearchRequest employeeSearchRequest);
+    FROM Employee  
+    WHERE (:name IS NULL OR name LIKE CONCAT('%', :name, '%'))
+    AND (:dobFrom IS NULL OR birthDate >= :dobFrom)
+    AND (:dobTo IS NULL OR birthDate <= :dobTo)
+    AND (:gender IS NULL OR gender = :gender)
+    AND (:salaryRange IS NULL OR
+        (:salaryRange = 1 AND salary < 5000000) OR 
+        (:salaryRange = 2 AND salary >= 5000000 AND salary < 10000000) OR
+        (:salaryRange = 3 AND salary >= 10000000 AND salary <= 20000000) OR 
+        (:salaryRange = 4 AND salary > 20000000))
+    AND (:phone IS NULL OR phone LIKE CONCAT('%', :phone, '%'))
+    AND (:departmentId IS NULL OR department = :departmentId)
+""")
+    Page<Employee> findByAttr(
+            @Param("name") String name,
+            @Param("dobFrom") LocalDate dobFrom,
+            @Param("dobTo") LocalDate dobTo,
+            @Param("gender") Gender gender,
+            @Param("salaryRange") Integer salaryRange,
+            @Param("phone") String phone,
+            @Param("departmentId") Integer departmentId,
+            Pageable pageable
+    );
+
 }

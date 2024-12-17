@@ -1,57 +1,61 @@
 package vn.techzen.BaseAPI.service.impl;
 
-import vn.techzen.BaseAPI.dto.employee.EmployeeSearchRequest;
-import vn.techzen.BaseAPI.entity.Employee;
-import vn.techzen.BaseAPI.repository.IEmployeeRepository;
-import vn.techzen.BaseAPI.service.IEmployeeService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.techzen.BaseAPI.entity.Employee;
+import vn.techzen.BaseAPI.dto.Gender;
+import vn.techzen.BaseAPI.repository.IEmployeeRepository;
+import vn.techzen.BaseAPI.service.IEmployeeService;
 
-import java.util.Collections;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class EmployeeService implements IEmployeeService {
-    @Autowired
+public class EmployeeService  implements IEmployeeService {
     IEmployeeRepository employeeRepository;
 
     @Override
-    public List<Employee> findByAttributes(EmployeeSearchRequest employeeSearchRequest) {
-        return employeeRepository.findByAttributes(employeeSearchRequest);
+    public Page<Employee> findAll(String name, LocalDate dobFrom, LocalDate dobTo, Gender gender, Integer salaryRange, String phone, Integer department_id, Pageable pageable) {
+        return employeeRepository.findByAttr( name,  dobFrom,  dobTo,  gender,  salaryRange,  phone,  department_id, pageable);
+    }
+    @Override
+    public Employee findById(int id) {
+        return employeeRepository.findById(id).get();
+    }
+    @Override
+    public Employee save(Employee employee) {
+        return employeeRepository.save(employee);
+    }
+    @Override
+    public Employee update(Employee employee, int id) {
+
+        Employee emp = employeeRepository.findById(id).get();
+        if(emp != null) {
+            emp.setName(employee.getName());
+            emp.setGender(employee.getGender());
+            emp.setSalary(employee.getSalary());
+            emp.setPhone(employee.getPhone());
+            emp.setBirthday(employee.getBirthday());
+            return employeeRepository.save(employee);
+        }
+        return null;
+
     }
 
     @Override
-    public void deleteEmployee(int id) {
+    public Void deleteEmployee(int id) {
+        employeeRepository.deleteById(id);
+        return null;
+    }
+
+    public void deleteById(int id) {
         employeeRepository.deleteById(id);
     }
 
-    public Employee updateEmployee(int id, Employee updatedData){
-        Employee employee = employeeRepository.findById(id).get();
-        employee.setName(updatedData.getName());
-        employee.setBirthday(updatedData.getBirthday());
-        employee.setSalary(updatedData.getSalary());
-        employee.setPhone(updatedData.getPhone());
-        employee.setGender(updatedData.getGender());
-        employee.setDepartment(updatedData.getDepartment());
-        employeeRepository.save(employee);
-        return employee;
-    }
-
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
-    }
-
-    public Optional<Employee> getEmployee(int id) {
-        return employeeRepository.findById(id);
-    }
-
-    public List<Employee> addEmployee(Employee emp) {
-        return Collections.singletonList(employeeRepository.save(emp));
-    }
 }

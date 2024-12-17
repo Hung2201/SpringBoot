@@ -1,29 +1,30 @@
 package vn.techzen.BaseAPI.entity;
-
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vn.techzen.BaseAPI.dto.Gender;
 
 import java.time.LocalDate;
+import java.util.Random;
 
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-    private LocalDate birthday;
-    private String gender;
-    private String phone;
-    private double salary;
+    int id;
+    String name;
+    LocalDate birthday;
+    double salary;
+    Gender gender;
+    String phone;
+
 
     @ManyToOne
-    @JoinColumn(name = "departmentId") // Tên cột khóa ngoại trong bảng Employee
-    private Department department;
+    @JoinColumn
+    Department department;
 }

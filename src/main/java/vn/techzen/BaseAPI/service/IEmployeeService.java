@@ -1,16 +1,17 @@
 package vn.techzen.BaseAPI.service;
 
-import vn.techzen.BaseAPI.dto.employee.EmployeeSearchRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import vn.techzen.BaseAPI.entity.Employee;
+import vn.techzen.BaseAPI.dto.Gender;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface IEmployeeService {
-    List<Employee> findByAttributes(EmployeeSearchRequest employeeSearchRequest);
-    Employee updateEmployee(int id, Employee updatedData);
-    void deleteEmployee(int id);
-    List<Employee> getAllEmployees();
-    Optional<Employee> getEmployee(int id);
-    List<Employee> addEmployee(Employee emp);
+    Page<Employee> findAll(String name, LocalDate dobFrom, LocalDate dobTo, Gender gender, Integer salaryRange, String phone, Integer department_id, Pageable pageable);
+    Employee findById(int id);
+    Employee save(Employee employee);
+    Employee update(Employee employee,int id);
+    Void deleteEmployee(int id);
 }
